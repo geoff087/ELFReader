@@ -15,7 +15,7 @@ public:
 
     void load(const char* path) {
         pstream = std::make_unique<std::ifstream>();
-        pstream->open("test", std::ios::in | std::ios::binary);
+        pstream->open(path, std::ios::in | std::ios::binary);
         if (!pstream->is_open()) {
             std::cout << "Can not open elf file\n";
             return;
