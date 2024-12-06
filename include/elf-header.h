@@ -7,6 +7,10 @@ class elf_header {
 public:
     virtual ~elf_header() {};
     virtual void load(std::istream& file) = 0;
+    virtual unsigned char get_class() = 0;
+    virtual Elf_Half get_phentsize() = 0;
+    virtual Elf_Half get_phnum() = 0;
+    virtual Elf64_Off get_phoff() = 0;
 };
 
 template <class T> struct elf_header_type;
@@ -48,6 +52,19 @@ public:
         std::cout << "e_shentsize:\t" << (*_converter)(_ehdr.e_shentsize) << '\n';
         std::cout << "e_shnum:\t" << (*_converter)(_ehdr.e_shnum) << '\n';
         std::cout << "e_shstrndx:\t" << (*_converter)(_ehdr.e_shstrndx) << '\n';
+    }
+
+    unsigned char get_class() {
+        return _ehdr.e_ident[EI_CLASS];
+    }
+    Elf_Half get_phentsize() {
+        return _ehdr.e_phentsize;
+    }
+    Elf_Half get_phnum() {
+        return _ehdr.e_phnum;
+    }
+    Elf64_Off get_phoff() {
+        return _ehdr.e_phoff;
     }
 private:
     T _ehdr = {};

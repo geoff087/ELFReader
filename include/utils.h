@@ -1,6 +1,7 @@
 #pragma once
 
 #include "elf-types.h"
+#include <fstream>
 
 class endian_converter {
 public:
