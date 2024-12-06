@@ -11,6 +11,9 @@ public:
     virtual Elf_Half get_phentsize() = 0;
     virtual Elf_Half get_phnum() = 0;
     virtual Elf64_Off get_phoff() = 0;
+    virtual Elf_Half get_shentsize() = 0;
+    virtual Elf_Half get_shnum() = 0;
+    virtual Elf64_Off get_shoff() = 0;
 };
 
 template <class T> struct elf_header_type;
@@ -55,16 +58,25 @@ public:
     }
 
     unsigned char get_class() {
-        return _ehdr.e_ident[EI_CLASS];
+        return (*_converter)(_ehdr.e_ident[EI_CLASS]);
     }
     Elf_Half get_phentsize() {
-        return _ehdr.e_phentsize;
+        return (*_converter)(_ehdr.e_phentsize);
     }
     Elf_Half get_phnum() {
-        return _ehdr.e_phnum;
+        return (*_converter)(_ehdr.e_phnum);
     }
     Elf64_Off get_phoff() {
-        return _ehdr.e_phoff;
+        return (*_converter)(_ehdr.e_phoff);
+    }
+    Elf_Half get_shentsize() {
+        return (*_converter)(_ehdr.e_shentsize);
+    }
+    Elf_Half get_shnum() {
+        return (*_converter)(_ehdr.e_shnum);
+    }
+    Elf64_Off get_shoff() {
+        return (*_converter)(_ehdr.e_shoff);
     }
 private:
     T _ehdr = {};
