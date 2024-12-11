@@ -133,3 +133,64 @@ struct Elf64_Shdr {
     Elf_Xword  sh_addralign;
     Elf_Xword  sh_entsize;
 };
+
+/////////////////////
+// Sections constants
+
+// Section indexes
+constexpr Elf_Word SHN_UNDEF     = 0;
+constexpr Elf_Word SHN_LORESERVE = 0xFF00;
+constexpr Elf_Word SHN_LOPROC    = 0xFF00;
+constexpr Elf_Word SHN_HIPROC    = 0xFF1F;
+constexpr Elf_Word SHN_LOOS      = 0xFF20;
+constexpr Elf_Word SHN_HIOS      = 0xFF3F;
+constexpr Elf_Word SHN_ABS       = 0xFFF1;
+constexpr Elf_Word SHN_COMMON    = 0xFFF2;
+constexpr Elf_Word SHN_XINDEX    = 0xFFFF;
+constexpr Elf_Word SHN_HIRESERVE = 0xFFFF;
+
+// Section types
+constexpr Elf_Word SHT_NULL               = 0;
+constexpr Elf_Word SHT_PROGBITS           = 1;
+constexpr Elf_Word SHT_SYMTAB             = 2;
+constexpr Elf_Word SHT_STRTAB             = 3;
+constexpr Elf_Word SHT_RELA               = 4;
+constexpr Elf_Word SHT_HASH               = 5;
+constexpr Elf_Word SHT_DYNAMIC            = 6;
+constexpr Elf_Word SHT_NOTE               = 7;
+constexpr Elf_Word SHT_NOBITS             = 8;
+constexpr Elf_Word SHT_REL                = 9;
+constexpr Elf_Word SHT_SHLIB              = 10;
+constexpr Elf_Word SHT_DYNSYM             = 11;
+constexpr Elf_Word SHT_INIT_ARRAY         = 14;
+constexpr Elf_Word SHT_FINI_ARRAY         = 15;
+constexpr Elf_Word SHT_PREINIT_ARRAY      = 16;
+constexpr Elf_Word SHT_GROUP              = 17;
+constexpr Elf_Word SHT_SYMTAB_SHNDX       = 18;
+constexpr Elf_Word SHT_GNU_ATTRIBUTES     = 0x6ffffff5;
+constexpr Elf_Word SHT_GNU_HASH           = 0x6ffffff6;
+constexpr Elf_Word SHT_GNU_LIBLIST        = 0x6ffffff7;
+constexpr Elf_Word SHT_CHECKSUM           = 0x6ffffff8;
+constexpr Elf_Word SHT_LOSUNW             = 0x6ffffffa;
+constexpr Elf_Word SHT_SUNW_move          = 0x6ffffffa;
+constexpr Elf_Word SHT_SUNW_COMDAT        = 0x6ffffffb;
+constexpr Elf_Word SHT_SUNW_syminfo       = 0x6ffffffc;
+constexpr Elf_Word SHT_GNU_verdef         = 0x6ffffffd;
+constexpr Elf_Word SHT_GNU_verneed        = 0x6ffffffe;
+constexpr Elf_Word SHT_GNU_versym         = 0x6fffffff;
+constexpr Elf_Word SHT_LOOS               = 0x60000000;
+constexpr Elf_Word SHT_HIOS               = 0x6fffffff;
+constexpr Elf_Word SHT_LOPROC             = 0x70000000;
+constexpr Elf_Word SHT_ARM_EXIDX          = 0x70000001;
+constexpr Elf_Word SHT_ARM_PREEMPTMAP     = 0x70000002;
+constexpr Elf_Word SHT_ARM_ATTRIBUTES     = 0x70000003;
+constexpr Elf_Word SHT_ARM_DEBUGOVERLAY   = 0x70000004;
+constexpr Elf_Word SHT_ARM_OVERLAYSECTION = 0x70000005;
+constexpr Elf_Word SHT_HIPROC             = 0x7FFFFFFF;
+constexpr Elf_Word SHT_LOUSER             = 0x80000000;
+// Used by Nintendo Wii U
+constexpr Elf_Word SHT_RPL_EXPORTS  = 0x80000001;
+constexpr Elf_Word SHT_RPL_IMPORTS  = 0x80000002;
+constexpr Elf_Word SHT_RPL_CRCS     = 0x80000003;
+constexpr Elf_Word SHT_RPL_FILEINFO = 0x80000004;
+constexpr Elf_Word SHT_HIUSER       = 0xFFFFFFFF;

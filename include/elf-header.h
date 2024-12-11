@@ -14,6 +14,7 @@ public:
     virtual Elf_Half get_shentsize() = 0;
     virtual Elf_Half get_shnum() = 0;
     virtual Elf64_Off get_shoff() = 0;
+    virtual Elf_Half get_shstrndx() = 0;
 };
 
 template <class T> struct elf_header_type;
@@ -77,6 +78,9 @@ public:
     }
     Elf64_Off get_shoff() {
         return (*_converter)(_ehdr.e_shoff);
+    }
+    Elf_Half get_shstrndx() {
+        return (*_converter)(_ehdr.e_shstrndx);
     }
 private:
     T _ehdr = {};

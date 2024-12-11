@@ -90,11 +90,32 @@ private:
         Elf_Half entry_size = _ehdr->get_shentsize();
         Elf_Half entry_num = _ehdr->get_shnum();
         Elf64_Off offset = _ehdr->get_shoff();
-
         for (int i = 0; i < entry_num; i++) {
             _sections.emplace_back(create_section(file_class));
             _sections.back()->set_index(i);
             _sections.back()->load(stream, offset + i * entry_size);
+        }
+        
+        auto data = _sections[_ehdr->get_shstrndx()]->get_data();
+        int sz = data.size();
+        std::vector<std::string> pool;
+        std::string tmp;
+        for(int i = 0; i < sz; i++) {
+            if (data[i] == 0) {
+                pool.emplace_back(tmp);
+                tmp.clear();
+            } else {
+                tmp += data[i];
+            }
+        }
+
+        for (int i = 0; i < entry_num; i++) {
+            Elf_Half index = _sections[i]->get_name_idx();
+            _sections[i]->set_name(pool[index]);
+            _sections[i]->dump();
+        }
+        for(int i = 0; i < pool.size(); i++) {
+            std::cout << i << ' ' << pool[i] << '\n';
         }
     }
 };
