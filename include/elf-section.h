@@ -11,7 +11,9 @@ public:
     virtual void set_name(const std::string& name) = 0;
     virtual void dump() = 0;
     virtual Elf_Word get_name_idx() = 0;
-    virtual std::vector<char> get_data() = 0;
+    virtual char* get_data() = 0;
+    virtual Elf_Xword get_size() = 0;
+    virtual Elf64_Off get_offset() = 0;
 };
 
 template <class T>
@@ -51,18 +53,26 @@ public:
         _name = name;
     }
 
-    std::vector<char> get_data() {
-        return _data;
+    char* get_data() {
+        return _data.get();
     }
 
     Elf_Word get_name_idx() {
         return (*_converter)(_shdr.sh_name);
     }
 
+    Elf_Xword get_size() {
+        return (*_converter)(_shdr.sh_size);
+    }
+    
+    Elf64_Off get_offset() {
+        return (*_converter)(_shdr.sh_offset);
+    }
+
 private:
     T _shdr = {};
     std::string _name;
-    std::vector<char> _data;
+    std::unique_ptr<char[]> _data = nullptr;
     Elf_Half _index = 0;
     std::shared_ptr<endian_converter> _converter;
 
@@ -70,8 +80,9 @@ private:
         if (_shdr.sh_type == SHT_NOBITS) {
             return;
         }
-        _data.resize(_shdr.sh_size);
-        stream.seekg(_shdr.sh_offset);
-        stream.read(reinterpret_cast<char*>(_data.data()), _data.size());
+        if (_data) _data.reset();
+        _data = std::make_unique<char[]>(get_size());
+        stream.seekg(get_offset());
+        stream.read(reinterpret_cast<char*>(_data.get()), get_size());
     }
 };
