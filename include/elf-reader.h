@@ -3,6 +3,7 @@
 #include "elf-header.h"
 #include "elf-segment.h"
 #include "elf-section.h"
+#include "elf-symtab.h"
 #include "utils.h"
 #include <string>
 #include <fstream>
@@ -42,6 +43,7 @@ private:
     std::unique_ptr<elf_header> _ehdr;
     std::vector<std::unique_ptr<segment>> _segments;
     std::vector<std::unique_ptr<section>> _sections;
+    std::unique_ptr<symbols> _symbols;
     std::shared_ptr<endian_converter> _converter;
 
     void create_header(unsigned char file_class, unsigned char encoding) {
@@ -72,6 +74,16 @@ private:
         return sec;
     }
 
+    std::unique_ptr<symbols> create_symtab(unsigned char file_class) {
+        std::unique_ptr<symbols> sym;
+        if (file_class == ELFCLASS32) {
+            sym = std::make_unique<symbols_impl<Elf32_Sym>>(_converter);
+        } else if (file_class == ELFCLASS64) {
+            sym = std::make_unique<symbols_impl<Elf64_Sym>>(_converter);
+        }
+        return sym;
+    }
+
     void load_segments(std::istream& stream) {
         unsigned char file_class = _ehdr->get_class();
         Elf_Half entry_size = _ehdr->get_phentsize();
@@ -97,12 +109,25 @@ private:
         }
         
         auto data = _sections[_ehdr->get_shstrndx()]->get_data();
-        int sz = _sections[_ehdr->get_shstrndx()]->get_size();
 
         for (int i = 0; i < entry_num; i++) {
             Elf_Half index = _sections[i]->get_name_idx();
             _sections[i]->set_name(data + index);
-            _sections[i]->dump();
+            // _sections[i]->dump();
+            if (_sections[i]->get_type() == SHT_SYMTAB) {
+                _symbols = create_symtab(file_class);
+                _symbols->set_symtab(_sections[i].get());
+                _symbols->load();
+            }
+        }
+
+        for(int i = 0; i < entry_num; i++) {
+            if (_sections[i]->get_name() == ".text") {
+                auto data_text = _sections[i]->get_data();
+                for(int j = 0; j < _sections[i]->get_size(); j++) {
+                    std::cout << std::setw(2) << static_cast<int>(data_text[j]) << ' ';
+                }
+            }
         }
     }
 };

@@ -14,6 +14,9 @@ public:
     virtual char* get_data() = 0;
     virtual Elf_Xword get_size() = 0;
     virtual Elf64_Off get_offset() = 0;
+    virtual Elf_Xword get_entsize() = 0;
+    virtual std::string get_name() = 0;
+    virtual Elf_Word get_type() = 0;
 };
 
 template <class T>
@@ -67,6 +70,18 @@ public:
     
     Elf64_Off get_offset() {
         return (*_converter)(_shdr.sh_offset);
+    }
+
+    Elf_Xword get_entsize() {
+        return (*_converter)(_shdr.sh_entsize);
+    }
+
+    std::string get_name() {
+        return _name;
+    }
+
+    Elf_Word get_type() {
+        return (*_converter)(_shdr.sh_type);
     }
 
 private:

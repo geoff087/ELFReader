@@ -20,9 +20,12 @@ public:
     ~segment_impl() = default;
 
     void load(std::istream& stream, std::streampos offset) {
-        std::cout << "============PHDR" << _index << "============\n";
         stream.seekg(offset);
         stream.read(reinterpret_cast<char*>(&_phdr), sizeof _phdr);
+    }
+
+    void dump() {
+        std::cout << "============PHDR" << _index << "============\n";
         std::cout << "e_type:\t" << (*_converter)(_phdr.p_type) << '\n';
         std::cout << "p_offset:\t" << (*_converter)(_phdr.p_offset) << '\n';
         std::cout << "p_vaddr:\t" << (*_converter)(_phdr.p_vaddr) << '\n';

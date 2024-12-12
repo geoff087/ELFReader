@@ -1,7 +1,6 @@
 #pragma once
 
 #include "elf-types.h"
-#include <fstream>
 
 class endian_converter {
 public:
@@ -39,3 +38,11 @@ private:
     }
   }
 };
+
+std::string to_cpp_string(const char* cstr, int size) {
+  std::string tmp;
+  for(int i = 0; i < size; i++) {
+    tmp += cstr[i];
+  }
+  return tmp;
+}

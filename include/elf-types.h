@@ -134,6 +134,31 @@ struct Elf64_Shdr {
     Elf_Xword  sh_entsize;
 };
 
+// Symbol table entry
+struct Elf32_Sym {
+    Elf_Word      st_name;
+    Elf32_Addr    st_value;
+    Elf_Word      st_size;
+    unsigned char st_info;
+    unsigned char st_other;
+    Elf_Half      st_shndx;
+};
+
+struct Elf64_Sym {
+    Elf_Word      st_name;
+    unsigned char st_info;
+    unsigned char st_other;
+    Elf_Half      st_shndx;
+    Elf64_Addr    st_value;
+    Elf_Xword     st_size;
+};
+
+#define ELF_ST_BIND( i )    ( ( i ) >> 4 )
+#define ELF_ST_TYPE( i )    ( ( i ) & 0xf )
+#define ELF_ST_INFO( b, t ) ( ( ( b ) << 4 ) + ( ( t ) & 0xf ) )
+
+#define ELF_ST_VISIBILITY( o ) ( ( o ) & 0x3 )
+
 /////////////////////
 // Sections constants
 
