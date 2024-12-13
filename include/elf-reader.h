@@ -117,9 +117,12 @@ private:
             if (_sections[i]->get_type() == SHT_SYMTAB) {
                 _symbols = create_symtab(file_class);
                 _symbols->set_symtab(_sections[i].get());
-                _symbols->load();
+            } else if (_sections[i]->get_type() == SHT_STRTAB && _sections[i]->get_name() == ".strtab") {
+                _symbols->set_strtab(_sections[i].get());
             }
         }
+
+        _symbols->load();
 
         for(int i = 0; i < entry_num; i++) {
             if (_sections[i]->get_name() == ".text") {

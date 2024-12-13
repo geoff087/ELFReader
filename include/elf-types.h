@@ -219,3 +219,17 @@ constexpr Elf_Word SHT_RPL_IMPORTS  = 0x80000002;
 constexpr Elf_Word SHT_RPL_CRCS     = 0x80000003;
 constexpr Elf_Word SHT_RPL_FILEINFO = 0x80000004;
 constexpr Elf_Word SHT_HIUSER       = 0xFFFFFFFF;
+
+// Symbol types
+constexpr Elf_Word STT_NOTYPE            = 0;
+constexpr Elf_Word STT_OBJECT            = 1;
+constexpr Elf_Word STT_FUNC              = 2;
+constexpr Elf_Word STT_SECTION           = 3;
+constexpr Elf_Word STT_FILE              = 4;
+constexpr Elf_Word STT_COMMON            = 5;
+constexpr Elf_Word STT_TLS               = 6;
+constexpr Elf_Word STT_LOOS              = 10;
+constexpr Elf_Word STT_AMDGPU_HSA_KERNEL = 10;
+constexpr Elf_Word STT_HIOS              = 12;
+constexpr Elf_Word STT_LOPROC            = 13;
+constexpr Elf_Word STT_HIPROC            = 15;

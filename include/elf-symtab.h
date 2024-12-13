@@ -2,17 +2,22 @@
 
 #include "elf-section.h"
 #include <sstream>
+#include <map>
 
 class symbols {
 public:
     virtual ~symbols() = default;
     virtual void load() = 0; 
     virtual void set_symtab(section* symtab) = 0;
+    virtual void set_strtab(section* strtab) = 0;
 };
 
 template <class T>
 class symbols_impl : public symbols {
 public:
+    using sym_type = std::pair<std::string, T>;
+    using funcsym_map = std::map<Elf64_Off, sym_type>;
+
     symbols_impl(std::shared_ptr<endian_converter> converter) 
         :_converter(converter)
     {}
@@ -23,20 +28,33 @@ public:
         for(int i = 0; i < _symtab->get_size(); i++) {
             std::cout << (int) data[i] << ' ';
         }
-        Elf_Xword section_size = _symtab->get_size();
-        std::cout << "SIZE: " << to_cpp_string(_symtab->get_data(), section_size).size() << '\n';
-        std::istringstream stream(std::move(to_cpp_string(_symtab->get_data(), section_size)));
+        Elf_Xword sym_section_size = _symtab->get_size();
+        Elf_Xword str_section_size = _strtab->get_size();
+        std::cout << "SIZE: " << to_cpp_string(_symtab->get_data(), sym_section_size).size() << '\n';
+        std::istringstream stream(std::move(to_cpp_string(_symtab->get_data(), sym_section_size)));
+        std::istringstream stream_str(std::move(to_cpp_string(_strtab->get_data(), str_section_size)));
         _load_symbol(stream);
+        _load_func_symbols(stream_str);
     }
 
     void set_symtab(section* symtab) {
         _symtab = symtab;
     }
+
+    void set_strtab(section* strtab) {
+        _strtab = strtab;
+    }
+
+    std::shared_ptr<funcsym_map> get_func_symbols() {
+        return _func_symbols;
+    }
    
 private:
     section* _symtab = nullptr;
+    section* _strtab = nullptr;
     std::shared_ptr<endian_converter> _converter;
-    std::vector<T> _symbols;
+    std::vector<sym_type> _symbols;
+    std::shared_ptr<funcsym_map> _func_symbols = nullptr;
 
     void _load_symbol(std::istream& stream) {
         Elf_Xword section_size = _symtab->get_size();
@@ -46,14 +64,28 @@ private:
         stream.seekg(0);
 
         for(int i = 0; i < entry_num; i++) {
-            stream.read(reinterpret_cast<char*>(&_symbols[i]), sizeof(T));
+            stream.read(reinterpret_cast<char*>(&_symbols[i].second), sizeof(T));
             std::cout << "============SYMBOL" << i << "============" << std::endl;
-            std::cout << "st_name:\t" << (*_converter)(_symbols[i].st_name) << '\n';
-            std::cout << "st_value:\t" << (*_converter)(_symbols[i].st_value) << '\n';
-            std::cout << "st_size:\t" << (*_converter)(_symbols[i].st_size) << '\n';
-            std::cout << "st_info:\t" << (*_converter)(_symbols[i].st_info) << '\n';
-            std::cout << "st_other:\t" << (*_converter)(_symbols[i].st_other) << '\n';
-            std::cout << "st_shndx:\t" << (*_converter)(_symbols[i].st_shndx) << '\n';
+            std::cout << "st_name:\t" << (*_converter)(_symbols[i].second.st_name) << '\n';
+            std::cout << "st_value:\t" << (*_converter)(_symbols[i].second.st_value) << '\n';
+            std::cout << "st_size:\t" << (*_converter)(_symbols[i].second.st_size) << '\n';
+            std::cout << "st_info:\t" << (int)(*_converter)(_symbols[i].second.st_info) << '\n';
+            std::cout << "st_other:\t" << (int)(*_converter)(_symbols[i].second.st_other) << '\n';
+            std::cout << "st_shndx:\t" << (*_converter)(_symbols[i].second.st_shndx) << '\n';
+        }
+    }
+
+    // this stream reads the data of section '.strtab'
+    void _load_func_symbols(std::istringstream& stream) {
+        _func_symbols = std::make_shared<std::map<Elf64_Off, sym_type>>();
+        for(sym_type& sym : _symbols) {
+            if (ELF_ST_TYPE(sym.second.st_info) == STT_FUNC) {
+                stream.seekg((*_converter)(sym.second.st_name));
+                stream >> sym.first;
+                sym.first = std::string(sym.first.c_str());
+                (*_func_symbols)[(*_converter)(sym.second.st_value)] = sym;
+                std::cout << "SYMBOL-FUNC: " << sym.first.c_str() << ' ' << sym.first.size() << std::endl;
+            }
         }
     }
 };
