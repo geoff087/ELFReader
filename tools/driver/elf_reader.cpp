@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iomanip>
 
-#include "elf-reader.h"
+#include "elf_reader.h"
 
 void read_ehdr(const char* path) {
   elf_reader reader;

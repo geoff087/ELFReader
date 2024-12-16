@@ -1,9 +1,9 @@
 #pragma once
 
-#include "elf-header.h"
-#include "elf-segment.h"
-#include "elf-section.h"
-#include "elf-symtab.h"
+#include "elf_header.h"
+#include "elf_segment.h"
+#include "elf_section.h"
+#include "elf_symtab.h"
 #include "utils.h"
 #include <string>
 #include <fstream>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "elf-section.h"
+#include "elf_section.h"
 #include <sstream>
 #include <map>
 
