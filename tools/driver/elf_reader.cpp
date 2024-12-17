@@ -5,7 +5,7 @@
 #include "rewrite_instance.h"
 
 void read_ehdr(const char* path) {
-  rewrite_instace RI(path);
+  rewrite_instance RI(path);
   RI.run();
 }
 
