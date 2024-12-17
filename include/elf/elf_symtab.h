@@ -6,17 +6,19 @@
 
 class symbols {
 public:
+    using funcsym_map = std::map<Elf64_Off, std::string>;
     virtual ~symbols() = default;
     virtual void load() = 0; 
     virtual void set_symtab(section* symtab) = 0;
     virtual void set_strtab(section* strtab) = 0;
+
+    virtual std::shared_ptr<funcsym_map> get_func_symbols() = 0;
 };
 
 template <class T>
 class symbols_impl : public symbols {
 public:
     using sym_type = std::pair<std::string, T>;
-    using funcsym_map = std::map<Elf64_Off, sym_type>;
 
     symbols_impl(std::shared_ptr<endian_converter> converter) 
         :_converter(converter)
@@ -77,14 +79,15 @@ private:
 
     // this stream reads the data of section '.strtab'
     void _load_func_symbols(std::istringstream& stream) {
-        _func_symbols = std::make_shared<std::map<Elf64_Off, sym_type>>();
+        _func_symbols = std::make_shared<funcsym_map>();
         for(sym_type& sym : _symbols) {
             if (ELF_ST_TYPE(sym.second.st_info) == STT_FUNC) {
                 stream.seekg((*_converter)(sym.second.st_name));
+                // >> read the string including '\0', use c_str() to cut. 
                 stream >> sym.first;
                 sym.first = std::string(sym.first.c_str());
-                (*_func_symbols)[(*_converter)(sym.second.st_value)] = sym;
-                std::cout << "SYMBOL-FUNC: " << sym.first.c_str() << ' ' << sym.first.size() << std::endl;
+                (*_func_symbols)[(*_converter)(sym.second.st_value)] = sym.first;
+                std::cout << "SYMBOL-FUNC: " << sym.first.c_str() << ' ' << (*_converter)(sym.second.st_size) << std::endl;
             }
         }
     }

@@ -2,11 +2,11 @@
 #include <fstream>
 #include <iomanip>
 
-#include "elf_reader.h"
+#include "rewrite_instance.h"
 
 void read_ehdr(const char* path) {
-  elf_reader reader;
-  reader.load(path);
+  rewrite_instace RI(path);
+  RI.run();
 }
 
 int main(int argc, char** argv) {

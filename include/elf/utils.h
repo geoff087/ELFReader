@@ -22,7 +22,7 @@ public:
     T ret = 0;
     while(iteration --) {
       ret = (ret << 8) | (value & 0xff);
-      value >>= 8;
+      value = value >> 8;
     }
     return ret;
   }
@@ -40,7 +40,7 @@ private:
   }
 };
 
-std::string to_cpp_string(const char* cstr, int size) {
+static std::string to_cpp_string(const char* cstr, int size) {
   std::string tmp;
   for(int i = 0; i < size; i++) {
     tmp += cstr[i];

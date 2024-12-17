@@ -2,6 +2,8 @@
 
 #include "elf_types.h"
 #include "utils.h"
+#include <iostream>
+#include <iomanip>
 
 class elf_header {
 public:

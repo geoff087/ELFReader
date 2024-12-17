@@ -13,11 +13,8 @@
 class elf_reader {
 public:
     elf_reader() :_converter(std::make_shared<endian_converter>()) {}
-    elf_reader(const char* path) {
 
-    }
-
-    void load(const char* path) {
+    void load(const std::string& path) {
         pstream = std::make_unique<std::ifstream>();
         pstream->open(path, std::ios::in | std::ios::binary);
         if (!pstream->is_open()) {
@@ -37,8 +34,18 @@ public:
         load_sections(*pstream);
     }
 
+    section* get_text_section() {
+        return _sections[_text_index].get();
+    }
+
+    symbols* get_symbols() {
+        return _symbols.get();
+    }
+
     
 private:
+    uint16_t _text_index = 0;
+
     std::unique_ptr<std::ifstream> pstream = nullptr;
     std::unique_ptr<elf_header> _ehdr;
     std::vector<std::unique_ptr<segment>> _segments;
@@ -127,9 +134,10 @@ private:
         for(int i = 0; i < entry_num; i++) {
             if (_sections[i]->get_name() == ".text") {
                 auto data_text = _sections[i]->get_data();
-                for(int j = 0; j < _sections[i]->get_size(); j++) {
-                    std::cout << std::setw(2) << static_cast<int>(data_text[j]) << ' ';
-                }
+                _text_index = i;
+                // for(int j = 0; j < _sections[i]->get_size(); j++) {
+                //     std::cout << std::setw(2) << static_cast<int>(data_text[j]) << ' ';
+                // }
             }
         }
     }

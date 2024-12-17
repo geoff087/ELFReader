@@ -17,6 +17,7 @@ public:
     virtual Elf_Xword get_entsize() = 0;
     virtual std::string get_name() = 0;
     virtual Elf_Word get_type() = 0;
+    virtual Elf64_Addr get_addr() = 0;
 };
 
 template <class T>
@@ -82,6 +83,10 @@ public:
 
     Elf_Word get_type() {
         return (*_converter)(_shdr.sh_type);
+    }
+
+    Elf64_Addr get_addr() {
+        return (*_converter)(_shdr.sh_addr);
     }
 
 private:
